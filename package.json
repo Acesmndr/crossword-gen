@@ -1,0 +1,16 @@
+{
+  "name": "crossword-gen",
+  "version": "1.0.0",
+  "description": "Generate crossword from a set of words",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "crossword",
+    "crossword-js",
+    "crossword-generator"
+  ],
+  "author": "acesmndr",
+  "license": "ISC"
+}
