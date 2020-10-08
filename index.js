@@ -23,7 +23,7 @@ const getProbableNextWords = (wordProbability, currentWord, letterPositions, dow
     }, []);
     /** If atleast a letter matches then return the word list else check another word */
     if (setOfNextWords.length) {
-        return setOfNextWords;
+      return setOfNextWords;
     }
   }
   return [];
@@ -72,13 +72,17 @@ const checkIfItCanBeKept = (nextWord, oldLetterIndex, newLetterIndex, currentWor
   }
 }
 
-function generateCrossword(inputWords) {
+const generateCrossword = (inputWords) => {
   /** Return if the input is not in the correct format */
-  if (!inputWords || !inputWords.length) {
+  if (!inputWords || typeof inputWords !== 'object' || !inputWords.length) {
     return new Error('Input words should be an array');
   }
-  /** comvert words to uppercase for consistency */
-  const words = inputWords.map(word => word.toUpperCase());
+  /** Return if the input has answer key absent */
+  if (!inputWords.find(inputWord => !!inputWord.answer)) {
+    return new Error('Input array should have answer key');
+  }
+  /** convert words to uppercase for consistency */
+  const words = inputWords.map(word => word.answer.toUpperCase());
   /** find the set of letters that make up the word */
   const letterSets = words.map(word => (new Set([...word].map(letter => letter))));
   /** array of letters
@@ -137,14 +141,16 @@ function generateCrossword(inputWords) {
   let minY = Math.min(...wordsSelected.map(word => word.coordinateStartIndex.y));
 
   /** Generate the crossword with alternating across and down */
-  const crossword = wordsSelected.reduce((acc, word, idx) => {
-    const newWord = {
-      word: word.word,
-      coordinates: {
-        x: word.coordinateStartIndex.x - minX,
-        y: word.coordinateStartIndex.y - minY,
-      },
-    };
+  const crossword = wordsSelected.reduce((acc, oneWord, idx) => {
+    const newWord = Object.assign(
+      {},
+      inputWords.find(inputWord => inputWord.answer.toUpperCase() === oneWord.word),
+      {
+        answer: oneWord.word,
+        row: oneWord.coordinateStartIndex.y - minY,
+        col: oneWord.coordinateStartIndex.x - minX,
+      }
+    );
     if(idx % 2 === 0) {
       acc.across.push(newWord);
     } else {
@@ -154,3 +160,5 @@ function generateCrossword(inputWords) {
   }, { across: [], down: [] });
   return crossword;
 }
+
+export { generateCrossword };
